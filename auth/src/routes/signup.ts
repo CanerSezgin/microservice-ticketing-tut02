@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express';
 import { body } from 'express-validator';
 import ValidationMiddleware from '../middlewares/validation';
+import { DatabaseConnectionError } from '../errors/database-connection-error';
 
 const router = express.Router();
 
@@ -15,8 +16,9 @@ const validations = [
 router.post(
   '/api/users/signup',
   [...validations, ValidationMiddleware],
-  (req: Request, res: Response) => {
+  async (req: Request, res: Response) => {
     const { email, password } = req.body;
+    throw new DatabaseConnectionError();
   }
 );
 

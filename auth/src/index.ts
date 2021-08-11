@@ -1,5 +1,10 @@
 import express from 'express';
+import 'express-async-errors';
 import { json } from 'body-parser';
+
+import { NotFoundError } from './errors/not-found-error';
+
+import { errorHandler } from './middlewares/error-handler';
 
 import { currentUserRouter } from './routes/current-user';
 import { signInRouter } from './routes/signin';
@@ -13,6 +18,12 @@ app.use(currentUserRouter);
 app.use(signInRouter);
 app.use(signOutRouter);
 app.use(signUpRouter);
+
+app.all('*', () => {
+  throw new NotFoundError();
+});
+
+app.use(errorHandler);
 
 app.listen(3000, () => {
   console.log('Listening on port 3000!!!');
