@@ -1,7 +1,9 @@
 import express, { Request, Response } from 'express';
 import { body } from 'express-validator';
 import ValidationMiddleware from '../middlewares/validation';
-import { DatabaseConnectionError } from '../errors/database-connection-error';
+import { User } from '../models/user';
+import { BadRequestError } from '../errors/BadRequestError';
+import jwt from 'jsonwebtoken';
 
 const router = express.Router();
 
@@ -18,7 +20,28 @@ router.post(
   [...validations, ValidationMiddleware],
   async (req: Request, res: Response) => {
     const { email, password } = req.body;
-    throw new DatabaseConnectionError();
+
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      console.log('Email in use');
+      throw new BadRequestError('Email in use', 409);
+    }
+
+    const user = User.build({ email, password });
+    await user.save();
+
+    // Generate JWT
+    const userJwt = jwt.sign(
+      { id: user.id, email: user.email },
+      process.env.JWT_KEY!
+    );
+
+    // Store it on session object
+    req.session = {
+      jwt: userJwt,
+    };
+
+    res.status(201).send(user);
   }
 );
 
