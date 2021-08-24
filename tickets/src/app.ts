@@ -3,12 +3,9 @@ import 'express-async-errors';
 import { json } from 'body-parser';
 import cookieSession from 'cookie-session';
 
-import { NotFoundError, errorHandler } from '@cstickets1/common';
+import { NotFoundError, errorHandler, currentUser } from '@cstickets1/common';
 
-import { currentUserRouter } from './routes/current-user';
-import { signInRouter } from './routes/signin';
-import { signOutRouter } from './routes/signout';
-import { signUpRouter } from './routes/signup';
+import { createTicketRouter } from "./routes/new"
 
 const app = express();
 app.set('trust proxy', true);
@@ -21,11 +18,11 @@ app.use(
   })
 );
 
-app.use(currentUserRouter);
-app.use(signInRouter);
-app.use(signOutRouter);
-app.use(signUpRouter);
+// Global Middlewares
+app.use(currentUser)
 
+// Routes
+app.use(createTicketRouter)
 app.all('*', () => {
   throw new NotFoundError();
 });

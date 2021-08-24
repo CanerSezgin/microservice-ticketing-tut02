@@ -1,8 +1,7 @@
 import express, { Request, Response } from 'express';
 import { body } from 'express-validator';
-import ValidationMiddleware from '../middlewares/validation';
-import { BadRequestError } from '../errors/bad-request-error';
-import { userJwt, getUserByEmail, createUser } from '../services/auth';
+import { BadRequestError, validationMiddleware, userJwt } from '@cstickets1/common';
+import { getUserByEmail, createUser } from '../services/auth';
 
 const router = express.Router();
 
@@ -16,7 +15,7 @@ const validations = [
 
 router.post(
   '/api/users/signup',
-  [...validations, ValidationMiddleware],
+  [...validations, validationMiddleware],
   async (req: Request, res: Response) => {
     const { email, password } = req.body;
 
