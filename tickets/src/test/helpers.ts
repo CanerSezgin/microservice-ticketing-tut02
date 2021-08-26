@@ -1,8 +1,9 @@
+import mongoose from 'mongoose';
 import { userJwt } from '@cstickets1/common';
 
-export const mock = {
+export const mock = () => ({
   user: {
-    id: '56d4fasf5',
+    id: new mongoose.Types.ObjectId().toHexString(),
     email: 'test@test.com',
   },
   signIn(): string[] {
@@ -15,4 +16,4 @@ export const mock = {
 
     return [`express:sess=${base64}`];
   },
-};
+});
